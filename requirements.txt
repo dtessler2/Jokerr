@@ -1,0 +1,4 @@
+requests
+django
+python-dotenv
+djangorestframework
