@@ -14,9 +14,20 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+
+# Jokerr_project/urls.py
+
 from django.contrib import admin
-from django.urls import path
+from django.urls import include, path
+from django.http import HttpResponse
+
+
+def home(request):
+    return HttpResponse("Welcome to the Jokerr Project!")
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    # path('api/', include('api.urls')),
+    path('', home),  # New root route
+    path('chatbot/', include('chatbot.urls')),
 ]
