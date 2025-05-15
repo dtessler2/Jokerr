@@ -28,6 +28,6 @@ def home(request):
 urlpatterns = [
     path('admin/', admin.site.urls),
     # path('api/', include('api.urls')),
-    path('', home),  # New root route
+    path('', include('chatbot.urls')),  # New root route
     path('chatbot/', include('chatbot.urls')),
 ]

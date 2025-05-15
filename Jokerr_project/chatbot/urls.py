@@ -2,7 +2,14 @@
 
 from django.urls import path
 from . import views
+from django.shortcuts import render
+
+
+def home(request):
+    return render(request, 'chatbot/chatbot.html')
 
 urlpatterns = [
-    path('chat/', views.chatbot_view, name='chatbot_view'),
+    path('', home, name='home'),  # This will serve as the main homepage
+    path('get-joke/', home, name='get_joke'),
+    path('chat/', views.chatbot_response, name='chatbot_response'),
 ]

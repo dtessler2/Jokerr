@@ -2,7 +2,9 @@
 *.iml
 .env
 venv/
+staticfiles/
 
 # Ignore Python cache files
 __pycache__/
 *.py[cod]
+
