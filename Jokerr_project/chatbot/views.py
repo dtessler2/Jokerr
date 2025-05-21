@@ -1,12 +1,14 @@
 # chatbot/views.py
-
+import openai
 from openai import OpenAI
 import os
 from django.http import JsonResponse
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
+from dotenv import load_dotenv
 import json
 
+load_dotenv()
 client = OpenAI()
 
 def chatbot_interface(request):
@@ -46,7 +48,7 @@ def chatbot_response(request):
                 input=f"Write a joke based on this category: {category}"
             )
 
-            reply = response.output_text
+            reply = response.output[0].content[0].text
             return JsonResponse({'reply': reply})
         except json.JSONDecodeError:
             return JsonResponse({"error": "Invalid JSON"}, status=400)
@@ -59,7 +61,7 @@ def is_valid_category(request):
     valid_categories = ["knock-knock", "knock knock", "riddle", "pun", "one-liner", "one liner", "political", "dad", "corny"]
     data = json.loads(request.body)
     user_input = data.get("message")
-    if user_input.trim().toLowerCase() in valid_categories:
+    if user_input.strip().lower() in valid_categories:
         return True
     return False
 

@@ -10,6 +10,5 @@ def home(request):
 
 urlpatterns = [
     path('', home, name='home'),  # This will serve as the main homepage
-    path('get-joke/', home, name='get_joke'),
     path('chat/', views.chatbot_response, name='chatbot_response'),
 ]
