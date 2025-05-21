@@ -28,8 +28,8 @@ def chatbot_response(request):
         try:
             tools = [{
                 "type": "function",
-                "name": "get_joke",
-                "description": "Get family-friendly joke for given category",
+                "name": "is_valid_category",
+                "description": "Returns a boolean value indicating whether or not the user-entered category is valid",
                 "parameters": {
                     "type": "object",
                     "properties": {
@@ -62,3 +62,12 @@ def chatbot_response(request):
             return JsonResponse({"error": str(e)}, status=500)
 
     return JsonResponse({'error': 'POST request required'}, status=400)
+
+def is_valid_category(request):
+    valid_categories = ["knock-knock", "knock knock", "riddle", "pun", "one-liner", "one liner", "political", "dad", "corny"]
+    data = json.loads(request.body)
+    user_input = data.get("message")
+    if user_input.trim().toLowerCase() in valid_categories:
+        return True
+    return False
+
