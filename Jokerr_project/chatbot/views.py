@@ -30,9 +30,18 @@ def chatbot_response(request):
             data = json.loads(request.body)
             user_input = data.get("message")
 
+            '''
+            # Identity
+            You are a helpful assistant the produces jokes
+            
+            # Instructions
+            Only produce jokes that are family-friendly and don't have
+            any adult content.
+            Your response should be 1-3 sentences.
+            '''
             response = client.responses.create(
                 model="gpt-4.1",
-                instructions="Talk in a family-friendly manner and filter out all adult content",
+                instructions="Talk in a family-friendly manner and filter out all adult content. Your response should be 1-3 sentences long.",
                 input=f"Write a joke based on this category: {user_input}"
             )
 
