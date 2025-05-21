@@ -32,6 +32,7 @@ def chatbot_response(request):
 
             response = client.responses.create(
                 model="gpt-4.1",
+                instructions="Talk in a family-friendly manner and filter out all adult content",
                 input=f"Write a joke based on this category: {user_input}"
             )
 
