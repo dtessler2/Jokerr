@@ -26,35 +26,17 @@ def chatbot_view(request):
 def chatbot_response(request):
     if request.method == 'POST':
         try:
-            tools = [{
-                "type": "function",
-                "name": "is_valid_category",
-                "description": "Returns a boolean value indicating whether or not the user-entered category is valid",
-                "parameters": {
-                    "type": "object",
-                    "properties": {
-                        "category": {
-                            "type": "string",
-                            "description": "Joke category e.g knock-knock, riddle"
-                        }
-                    },
-                "required": [
-                    "category"
-                ],
-                "additionalProperties": False
-                }
-            }]
+
             data = json.loads(request.body)
             user_input = data.get("message")
 
             response = client.responses.create(
-                model="gpt-4",
-                input=[
-                    {"role": "user", "content": user_input}
-                ], tools=tools
+                model="gpt-4.1",
+                input=f"Write a joke based on this category: {user_input}"
             )
 
-            reply = response.output
+            reply = response.output_text
+            print(reply)
             return JsonResponse({'reply': reply})
         except json.JSONDecodeError:
             return JsonResponse({"error": "Invalid JSON"}, status=400)
