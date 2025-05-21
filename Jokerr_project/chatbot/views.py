@@ -26,9 +26,10 @@ def chatbot_view(request):
 def chatbot_response(request):
     if request.method == 'POST':
         try:
-
             data = json.loads(request.body)
-            user_input = data.get("message")
+            category = data.get("message")
+            if not is_valid_category(category):
+                return JsonResponse({"reply": "Invalid joke category"})
 
             '''
             # Identity
@@ -42,11 +43,10 @@ def chatbot_response(request):
             response = client.responses.create(
                 model="gpt-4.1",
                 instructions="Talk in a family-friendly manner and filter out all adult content. Your response should be 1-3 sentences long.",
-                input=f"Write a joke based on this category: {user_input}"
+                input=f"Write a joke based on this category: {category}"
             )
 
             reply = response.output_text
-            print(reply)
             return JsonResponse({'reply': reply})
         except json.JSONDecodeError:
             return JsonResponse({"error": "Invalid JSON"}, status=400)
