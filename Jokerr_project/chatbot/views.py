@@ -1,13 +1,13 @@
 # chatbot/views.py
 
-import openai
+from openai import OpenAI
 import os
 from django.http import JsonResponse
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 import json
 
-openai.api_key = os.getenv("OPENAI_API_KEY")
+client = OpenAI()
 
 def chatbot_interface(request):
     return render(request, "chatbot/chatbot.html")
@@ -26,17 +26,35 @@ def chatbot_view(request):
 def chatbot_response(request):
     if request.method == 'POST':
         try:
+            tools = [{
+                "type": "function",
+                "name": "get_joke",
+                "description": "Get family-friendly joke for given category",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "category": {
+                            "type": "string",
+                            "description": "Joke category e.g knock-knock, riddle"
+                        }
+                    },
+                "required": [
+                    "category"
+                ],
+                "additionalProperties": False
+                }
+            }]
             data = json.loads(request.body)
             user_input = data.get("message")
 
-            response = openai.ChatCompletion.create(
+            response = client.responses.create(
                 model="gpt-4",
-                messages=[
+                input=[
                     {"role": "user", "content": user_input}
-                ]
+                ], tools=tools
             )
 
-            reply = response.choices[0].message["content"]
+            reply = response.output
             return JsonResponse({'reply': reply})
         except json.JSONDecodeError:
             return JsonResponse({"error": "Invalid JSON"}, status=400)
