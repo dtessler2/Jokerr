@@ -1,13 +1,13 @@
 # chatbot/views.py
 
-import openai
+from openai import OpenAI
 import os
 from django.http import JsonResponse
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 import json
 
-openai.api_key = os.getenv("OPENAI_API_KEY")
+client = OpenAI()
 
 def chatbot_interface(request):
     return render(request, "chatbot/chatbot.html")
@@ -26,17 +26,27 @@ def chatbot_view(request):
 def chatbot_response(request):
     if request.method == 'POST':
         try:
+
             data = json.loads(request.body)
             user_input = data.get("message")
 
-            response = openai.ChatCompletion.create(
-                model="gpt-4",
-                messages=[
-                    {"role": "user", "content": user_input}
-                ]
+            '''
+            # Identity
+            You are a helpful assistant the produces jokes
+            
+            # Instructions
+            Only produce jokes that are family-friendly and don't have
+            any adult content.
+            Your response should be 1-3 sentences.
+            '''
+            response = client.responses.create(
+                model="gpt-4.1",
+                instructions="Talk in a family-friendly manner and filter out all adult content. Your response should be 1-3 sentences long.",
+                input=f"Write a joke based on this category: {user_input}"
             )
 
-            reply = response.choices[0].message["content"]
+            reply = response.output_text
+            print(reply)
             return JsonResponse({'reply': reply})
         except json.JSONDecodeError:
             return JsonResponse({"error": "Invalid JSON"}, status=400)
@@ -44,3 +54,12 @@ def chatbot_response(request):
             return JsonResponse({"error": str(e)}, status=500)
 
     return JsonResponse({'error': 'POST request required'}, status=400)
+
+def is_valid_category(request):
+    valid_categories = ["knock-knock", "knock knock", "riddle", "pun", "one-liner", "one liner", "political", "dad", "corny"]
+    data = json.loads(request.body)
+    user_input = data.get("message")
+    if user_input.trim().toLowerCase() in valid_categories:
+        return True
+    return False
+
