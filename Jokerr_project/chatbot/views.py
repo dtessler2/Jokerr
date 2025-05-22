@@ -28,7 +28,6 @@ def chatbot_view(request):
 def chatbot_response(request):
     if request.method == 'POST':
         try:
-            print("Request body:", request.body)
             data = json.loads(request.body)
             category = data.get("message")
             if not is_valid_category(category):
@@ -54,13 +53,14 @@ def chatbot_response(request):
         except json.JSONDecodeError:
             return JsonResponse({"error": "Invalid JSON"}, status=400)
         except Exception as e:
+            print(e)
             return JsonResponse({"error": str(e)}, status=500)
 
     return JsonResponse({'error': 'POST request required'}, status=400)
 
-def is_valid_category(request):
-    valid_categories = ["knock-knock", "knock knock", "riddle", "pun", "one-liner", "one liner", "political", "dad", "corny", "yeshivish"]
-    if request.strip().lower() in valid_categories:
+def is_valid_category(category):
+    valid_categories = ["yeshivish", "knock knock", "riddle", "pun", "one-liner", "one liner", "political", "dad", "corny"]
+    if category.strip().lower() in valid_categories:
         return True
     return False
 
