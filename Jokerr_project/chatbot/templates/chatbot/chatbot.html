@@ -26,14 +26,21 @@
 </script>
 <div class="chat-container">
     <h1>Jokerr</h1>
+    <div class="category-buttons">
+        <button onclick="sendCategory('yeshivish')">yeshivish</button>
+        <button onclick="sendCategory('knock knock')">knock knock</button>
+        <button onclick="sendCategory('riddle')">riddle</button>
+        <button onclick="sendCategory('pun')">pun</button>
+        <button onclick="sendCategory('one-liner')">one-liner</button>
+        <button onclick="sendCategory('one liner')">one liner</button>
+        <button onclick="sendCategory('political')">political</button>
+        <button onclick="sendCategory('dad')">dad</button>
+        <button onclick="sendCategory('corny')">corny</button>
+    </div>
     <div class="chat-box" id="chat-box">
         <!-- Chat messages will be appended here -->
     </div>
 
-    <div class="input-box">
-        <input type="text" id="user-input" placeholder="Select a category" autocomplete="off">
-        <button onclick="sendMessage()">Send</button>
-    </div>
 </div>
 
 <script>
@@ -75,6 +82,31 @@
         messageElement.textContent = sender + ": " + text;
         chatBox.appendChild(messageElement);
         chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+    function sendCategory(category) {
+        appendMessage("You", category);
+
+        fetch("/chatbot/chat/", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ message: category }),
+        })
+            .then(response => response.json())
+            .then(data => {
+                console.log("Response data:", data);
+                if (data.reply) {
+                    appendMessage("Bot", data.reply);
+                } else if (data.error) {
+                    appendMessage("Bot", data.error);
+                }
+            })
+            .catch(error => {
+                console.log("Error:", error);
+                appendMessage("Bot", "Something went wrong. Try again.");
+            });
     }
 </script>
 </body>
